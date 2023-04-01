@@ -32,17 +32,31 @@ export class App extends Component {
 
   handleSubmit = evt => {
     evt.preventDefault();
-    const { name, number } = this.state;
+    const { name, number, contacts } = this.state;
     const newContact = {
       id: nanoid(),
       name: name,
       number: number
     }
 
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, newContact]
-    }))
+    const exists = contacts.find(contact => contact.name === name);
+
+    if (exists) {
+      alert("This contact already exists.");
+    }
+    else {
+      this.setState(prevState => ({
+        contacts: [...prevState.contacts, newContact]
+      }))
+    }
+    
     this.reset();
+  }
+
+  handleDelete = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
   }
 
   reset = () => {
@@ -112,8 +126,10 @@ export class App extends Component {
           </label>
         </form>
         <ul>
-          {filteredContacts.map(contact => (
-            <li key={contact.id} name={contact.name} > {contact.name}{' '}{contact.number} </li>
+          {filteredContacts.map(({ name, number, id }) => (
+            <li key={id} name={name} > {name}{' '}{number}
+              <button style={{fontSize: '20px'}} type='button' onClick={() => this.handleDelete(id)}>delete</button>
+            </li>
           ))}
         </ul>
 
